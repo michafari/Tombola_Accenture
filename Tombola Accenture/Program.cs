@@ -1,3 +1,16 @@
-// See https://aka.ms/new-console-template for more information
+using System;
 
-Console.WriteLine("Hello, World!");
+namespace Tombola_Accenture
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            Partita miaPartita = new Partita();
+            while (true)
+            {
+                miaPartita.estrazione_numero(out int num);
+            }
+        }
+    }
+}
