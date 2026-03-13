@@ -1,5 +1,5 @@
 namespace Tombola_Accenture;
-
+ 
 public class Giocatore
 {
     public string Nome { get; set; }
