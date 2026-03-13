@@ -1,47 +1,44 @@
-namespace Tombola_Accenture;
-
-public class Giocatore
+namespace Tombola_Accenture
 {
-    public string Nome { get; set; }
-    public double Portafogli { get; set; }
-    public List<Cartella> Cartelle { get; set; }
-
-    public Giocatore(string nome, double portafogliIniziale)
+    public class Giocatore
     {
-        Nome = nome;
-        Portafogli = portafogliIniziale;
-        Cartelle = new List<Cartella>();
-    }
-
-    // METODO
-    public void Incassa_premio(double valorePremio)
-    {
-        Portafogli += valorePremio;
-    }
-
-    // METODO
-    public bool Compra_cartella(int id, Partita partita)
-    {
-        if (Portafogli < partita.CostoCartella)
-        {
-            Console.WriteLine($"{Nome} non ha abbastanza soldi per comprare la cartella {id}.");
-            return false;
-        }
+        public string Nome { get; set; }
         
-        if (partita.IdCartellePrese.Contains(id))
+        public double Bilancio { get; set; } 
+        public List<Cartella> Cartelle { get; set; }
+
+        public Giocatore(string nome)
         {
-            Console.WriteLine($"La cartella {id} è già stata acquistata da un altro giocatore.");
-            return false;
+            Nome = nome;
+            Bilancio = 0.0;
+            Cartelle = new List<Cartella>();
         }
-        
-        Portafogli -= partita.CostoCartella;
-        Cartella nuovaCartella = new Cartella(id);
-        Cartelle.Add(nuovaCartella);
-        partita.IdCartellePrese.Add(id);
+
+        public void Incassa_premio(double valorePremio)
+        {
+            Bilancio += valorePremio;
+        }
+
+        public bool Compra_cartella(int id, Partita partita)
+        {
+            // Rimosso il controllo "if (Portafogli < costo)" -> il budget è illimitato
+
+            if (partita.IdCartellePrese.Contains(id))
+            {
+                Console.WriteLine($"La cartella {id} è già stata acquistata da un altro giocatore.");
+                return false;
+            }
             
-        Console.WriteLine($"{Nome} ha acquistato la cartella {id}. Saldo residuo: {Portafogli:C}");
-        nuovaCartella.Visualizza();
-        return true;
+            // Scaliamo il costo dal bilancio (che diventerà negativo)
+            Bilancio -= partita.CostoCartella;
+            
+            Cartella nuovaCartella = new Cartella(id);
+            Cartelle.Add(nuovaCartella);
+            partita.IdCartellePrese.Add(id);
+                
+            Console.WriteLine($"{Nome} ha acquistato la cartella {id}. Bilancio parziale: {Bilancio:C}");
+            
+            return true;
+        }
     }
-    
 }

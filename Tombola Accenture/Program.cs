@@ -146,7 +146,7 @@ namespace Tombola_Accenture
                     }
                     else
                     {
-
+1
                         premioInPalio = premiAttivi[indicePremioAttuale];
                         Console.WriteLine($"\n-> ORA SI GIOCA PER: {premioInPalio.Tipo.ToString().ToUpper()} ({premioInPalio.Valore:C}) <-");
                     }
