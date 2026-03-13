@@ -33,13 +33,13 @@ public class Giocatore
             Console.WriteLine($"La cartella {id} è già stata acquistata da un altro giocatore.");
             return false;
         }
-
-        // Acquisto effettivo
+        
         Portafogli -= partita.CostoCartella;
-        Cartelle.Add(new Cartella(id));
+        Cartelle.Add(cartella = new Cartella(id));
         partita.IdCartellePrese.Add(id);
             
         Console.WriteLine($"{Nome} ha acquistato la cartella {id}. Saldo residuo: {Portafogli:C}");
+        cartella.Visualizza()
         return true;
     }
     
