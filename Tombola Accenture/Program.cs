@@ -17,7 +17,8 @@ namespace Tombola_Accenture
                 string nome = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(nome)) break;
 
-                Giocatore g = new Giocatore(nome, 50.00);
+                // Modifica: Inizializziamo il giocatore solo con il nome. Il bilancio parte da 0 in automatico.
+                Giocatore g = new Giocatore(nome);
                 party.Aggiungi_giocatore(g);
             }
 
@@ -52,7 +53,7 @@ namespace Tombola_Accenture
             
             foreach (var giocatore in party.Giocatori)
             {
-                Console.WriteLine($"\nTurno di {giocatore.Nome} (Budget: {giocatore.Portafogli:C})");
+                Console.WriteLine($"\nTurno di acquisto per {giocatore.Nome}");
                 Console.Write("Quante cartelle vuoi comprare? ");
                 if (int.TryParse(Console.ReadLine(), out int numCartelle))
                 {
@@ -68,7 +69,6 @@ namespace Tombola_Accenture
             Console.WriteLine("\n--- INIZIALIZZAZIONE PREMI ---");
             partita.InizializzaPremi();
 
-            // Recuperiamo la lista degli oggetti Premio già creata (più efficiente, niente LINQ o Dictionary!)
             var premiAttivi = partita.PremiAttivi;
 
             if (premiAttivi.Count == 0)
@@ -112,7 +112,6 @@ namespace Tombola_Accenture
                         cartella.SegnaNumero(estratto);
                         cartella.Visualizza();
 
-                        // Confrontiamo direttamente le enumerazioni TipoPremio (grazie all'enum int order)
                         if (cartella.PremioMassimo.HasValue && cartella.PremioMassimo.Value >= premioInPalio.Tipo)
                         {
                             haVintoPremioCorrente = true;
@@ -133,7 +132,7 @@ namespace Tombola_Accenture
 
                     foreach (var vincitore in vincitoriTurno)
                     {
-                        Console.WriteLine($"> {vincitore.Nome} fa {premioInPalio.Tipo}!");
+                        Console.WriteLine($"> {vincitore.Nome} vince {premioInPalio.Tipo} e incassa {premioDaDividere:C}!");
                         vincitore.Incassa_premio(premioDaDividere);
                     }
 
@@ -146,7 +145,6 @@ namespace Tombola_Accenture
                     }
                     else
                     {
-1
                         premioInPalio = premiAttivi[indicePremioAttuale];
                         Console.WriteLine($"\n-> ORA SI GIOCA PER: {premioInPalio.Tipo.ToString().ToUpper()} ({premioInPalio.Valore:C}) <-");
                     }
@@ -159,7 +157,10 @@ namespace Tombola_Accenture
             Console.WriteLine("========================================");
             foreach (var giocatore in party.Giocatori)
             {
-                Console.WriteLine($"- {giocatore.Nome}: Budget finale = {giocatore.Portafogli:C} (Bilancio: {giocatore.Portafogli - 50.00:C})");
+                // Un bilancio > 0 significa che ha vinto più di quanto ha speso
+                // Un bilancio < 0 significa che ha speso in cartelle più di quanto ha vinto
+                string esito = giocatore.Bilancio >= 0 ? "in PROFITTO" : "in PERDITA";
+                Console.WriteLine($"- {giocatore.Nome}: Bilancio finale = {giocatore.Bilancio:C} ({esito})");
             }
             Console.WriteLine("========================================");
             Console.WriteLine("Grazie per aver giocato!");
