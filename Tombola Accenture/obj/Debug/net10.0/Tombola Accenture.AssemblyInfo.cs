@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Tombola Accenture")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+35ce606a506b78c4b95d7b1258cc684717397c9d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+87d866e1771e570e7eb431c370ac2ed4aa4f4467")]
 [assembly: System.Reflection.AssemblyProductAttribute("Tombola Accenture")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Tombola Accenture")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
