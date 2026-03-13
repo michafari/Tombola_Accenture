@@ -38,6 +38,7 @@ namespace Tombola_Accenture
 
             return numeroEstratto;
         }
+
         public void InizializzaPremi()
         {
             PremiAttivi.Clear();
@@ -49,30 +50,19 @@ namespace Tombola_Accenture
                 return;
             }
 
-            // 1. Percentuali classiche della tombola
+            // 1. Percentuali classiche della tombola (nessun limite minimo)
             double premioAmbo = montepremi * 0.08;
             double premioTerno = montepremi * 0.12;
             double premioQuaterna = montepremi * 0.15;
             double premioCinquina = montepremi * 0.25;
             double premioTombola = montepremi * 0.40;
 
-            double fondiDaRedistribuire = 0;
-            
-            // 2. Controllo valore minimo del premio
-            if (premioAmbo < CostoCartella) { fondiDaRedistribuire += premioAmbo; premioAmbo = 0; }
-            if (premioTerno < CostoCartella) { fondiDaRedistribuire += premioTerno; premioTerno = 0; }
-            if (premioQuaterna < CostoCartella) { fondiDaRedistribuire += premioQuaterna; premioQuaterna = 0; }
-            if (premioCinquina < CostoCartella) { fondiDaRedistribuire += premioCinquina; premioCinquina = 0; }
-            
-            // 3. Spostiamo i fondi residui nel premio massimo
-            premioTombola += fondiDaRedistribuire;
-            
-            // 4. Inizializziamo gli oggetti Premio veri e propri solo se validi e li inseriamo in lista
-            if (premioAmbo > 0) PremiAttivi.Add(new Premio(Premio.TipoPremio.Ambo, Math.Round(premioAmbo, 2)));
-            if (premioTerno > 0) PremiAttivi.Add(new Premio(Premio.TipoPremio.Terno, Math.Round(premioTerno, 2)));
-            if (premioQuaterna > 0) PremiAttivi.Add(new Premio(Premio.TipoPremio.Quaterna, Math.Round(premioQuaterna, 2)));
-            if (premioCinquina > 0) PremiAttivi.Add(new Premio(Premio.TipoPremio.Cinquina, Math.Round(premioCinquina, 2)));
-            if (premioTombola > 0) PremiAttivi.Add(new Premio(Premio.TipoPremio.Tombola, Math.Round(premioTombola, 2)));
+            // 2. Inizializziamo gli oggetti Premio veri e propri e li inseriamo in lista
+            PremiAttivi.Add(new Premio(Premio.TipoPremio.Ambo, Math.Round(premioAmbo, 2)));
+            PremiAttivi.Add(new Premio(Premio.TipoPremio.Terno, Math.Round(premioTerno, 2)));
+            PremiAttivi.Add(new Premio(Premio.TipoPremio.Quaterna, Math.Round(premioQuaterna, 2)));
+            PremiAttivi.Add(new Premio(Premio.TipoPremio.Cinquina, Math.Round(premioCinquina, 2)));
+            PremiAttivi.Add(new Premio(Premio.TipoPremio.Tombola, Math.Round(premioTombola, 2)));
             
             // Stampa riepilogo
             Console.WriteLine($"\n=== MONTEPREMI TOTALE: {montepremi:C} ===");

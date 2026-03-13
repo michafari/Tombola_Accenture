@@ -87,16 +87,16 @@ namespace Tombola_Accenture
 
             while (!partitaFinita)
             {
-                Console.WriteLine("\nPremi INVIO per estrarre un numero (o 'esci' per terminare)...");
+                Console.WriteLine("\nPremi INVIO per estrarre un numero (o scrivi 'esci' per terminare)...");
                 string input = Console.ReadLine();
                 if (input?.ToLower() == "esci") break;
 
                 int estratto = partita.Estrai_numero();
                 if (estratto == -1) break; 
 
-                Console.WriteLine($"\n==================================================");
-                Console.WriteLine($"              NUMERO ESTRATTO: {estratto} !!!              ");
-                Console.WriteLine($"==================================================");
+                Console.WriteLine($"\n========================================");
+                Console.WriteLine($"   NUMERO ESTRATTO: {estratto} !!!");
+                Console.WriteLine($"========================================");
 
                 tabellone.SegnaNumero(estratto);
                 tabellone.Visualizza(estratto);

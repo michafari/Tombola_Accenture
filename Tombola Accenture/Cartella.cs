@@ -195,9 +195,18 @@
         {
             string prop = string.IsNullOrEmpty(nomeProprietario) ? "" : $" di {nomeProprietario}";
             string titolo = Id < 0 ? $"SEZIONE TABELLONE ({Id})" : $"CARTELLA N° {Id}{prop}";
-            Console.WriteLine($"\n--- {titolo} ---");
-
-            // Stampa compatta per le sezioni del tabellone
+            
+            int spazioTrattini = 46 - (titolo.Length + 2);
+            if (spazioTrattini < 0)
+            {
+                titolo = titolo.Substring(0, 46 - 6) + "...";
+                spazioTrattini = 4;
+            }
+            int sinistra = spazioTrattini / 2;
+            int destra = spazioTrattini - sinistra;
+            string rigaTitolo = $"{new string('-', sinistra)} {titolo} {new string('-', destra)}";
+            Console.WriteLine($"\n{rigaTitolo}");
+            
             if (Id < 0) 
             {
                 for (int riga = 0; riga < 3; riga++)
