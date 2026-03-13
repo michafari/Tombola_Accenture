@@ -2,36 +2,45 @@ namespace Tombola_Accenture;
 
 public class Giocatore
 {
-    public string nome;
-    public List<int> cartelle;
-    public double portafogli;
+    public string Nome { get; set; }
+    public double Portafogli { get; set; }
+    public List<Cartella> Cartelle { get; set; }
 
-    public void acquista_cartella(List<int> cartelle_disponibili, double costo_cartella)
+    public Giocatore(string nome, double portafogliIniziale)
     {
-        Console.WriteLine("Scegli il numero della cartella");
-        Console.WriteLine("Questa è la lista delle cartelle disponibili");
-        int cartella = int.Parse(Console.ReadLine());
-        if (cartelle_disponibili.Contains(cartella))
-        {
-            
-            cartelle.Add(cartella);
-            portafogli -= costo_cartella;
-            Console.WriteLine($"{nome}, hai acquistato la cartella numero {cartella}");
-            Console.WriteLine($"Ora il tuo saldo è {portafogli}");
-            Console.WriteLine($"Le tue cartelle sono {cartelle}");
-        }
-        else
-        {
-            Console.WriteLine("La cartella che hai scelto non è disponibile");
-            Console.WriteLine("Scegli un'altra cartella");
-        }
+        Nome = nome;
+        Portafogli = portafogliIniziale;
+        Cartelle = new List<Cartella>();
     }
 
-    public void incassa_premi(double premio)
+    // METODO
+    public void Incassa_premio(double valorePremio)
     {
-        Console.WriteLine($"complimenti {nome}, hai ottenuto una vincita di {premio} da una delle tue cartelle");
-        portafogli += premio;
-        Console.WriteLine($"Ora il tuo saldo è {portafogli}");
+        Portafogli += valorePremio;
+    }
+
+    // METODO
+    public bool Compra_cartella(int id, Partita partita)
+    {
+        if (Portafogli < partita.CostoCartella)
+        {
+            Console.WriteLine($"{Nome} non ha abbastanza soldi per comprare la cartella {id}.");
+            return false;
+        }
+        
+        if (partita.IdCartellePrese.Contains(id))
+        {
+            Console.WriteLine($"La cartella {id} è già stata acquistata da un altro giocatore.");
+            return false;
+        }
+
+        // Acquisto effettivo
+        Portafogli -= partita.CostoCartella;
+        Cartelle.Add(new Cartella(id));
+        partita.IdCartellePrese.Add(id);
+            
+        Console.WriteLine($"{Nome} ha acquistato la cartella {id}. Saldo residuo: {Portafogli:C}");
+        return true;
     }
     
 }

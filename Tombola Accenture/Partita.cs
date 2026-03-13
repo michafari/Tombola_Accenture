@@ -2,35 +2,31 @@ namespace Tombola_Accenture;
 
 public class Partita
 {
-    public double costo_cartelle;
-    public string Party;
-    public string tabellone;
-    public List<int> numeri_usciti = new List<int>(); 
-    public List<string> premi = new List<string>();
+    public double CostoCartella { get; set; }
+    public List<int> IdCartellePrese { get; set; }
+    public List<int> NumeriNelSacchetto { get; set; }
 
-    public void inizio_partita()
-    {
-        Console.WriteLine("Via all'inizio della partita!");
-    }
+    private Random _random = new Random();
 
-    public void estrazione_numero(out int numero_estratto)
+    public Partita(double costoCartella)
     {
-        Random rnd = new Random();
+        CostoCartella = costoCartella;
+        IdCartellePrese = new List<int>();
+        NumeriNelSacchetto = new List<int>();
         
-        do
+        for (int i = 1; i <= 90; i++)
         {
-            numero_estratto = rnd.Next(1, 91);
-        } while (numeri_usciti.Contains(numero_estratto));
-        
-        Console.WriteLine($"!! è uscito il numero {numero_estratto}");
-        numeri_usciti.Add(numero_estratto);
-        Console.WriteLine("RECAP numeri usciti: ");
-        foreach (var num in numeri_usciti)
-        {
-            Console.Write(num + " ");
+            NumeriNelSacchetto.Add(i);
         }
-        Console.WriteLine();
+    }
+    
+    public int Estrai_numero()
+    {
+        int indice = _random.Next(NumeriNelSacchetto.Count);
+        int numeroEstratto = NumeriNelSacchetto[indice];
         
-        
+        NumeriNelSacchetto.RemoveAt(indice);
+
+        return numeroEstratto;
     }
 }
