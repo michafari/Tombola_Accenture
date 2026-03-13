@@ -2,40 +2,31 @@ namespace Tombola_Accenture;
 
 public class Party
 {
-    public string nome;
-    public List<string> giocatori;
+    public List<Giocatore> Giocatori { get; set; }
 
-    public void aggiungi_giocatore()
+    public Party()
     {
-        Console.WriteLine("Scrivi il tuo nickname per unirti al Party");
-        string giocatore =  Console.ReadLine();
-        if (giocatori.Contains(giocatore))
-        {
-            Console.WriteLine("Il nickname scelto è già in uso in questo Party");
-            
-        }
-        else
-        {
-            giocatori.Add(giocatore);
-            Console.WriteLine($"complimenti {giocatore}, sei stato aggiunto al Party {nome}");
-            Console.WriteLine($"Ora il Party è composto dai giocatori {giocatori}");
-        }
-
+        Giocatori = new List<Giocatore>();
     }
 
-    public void rimuovi_giocatore()
+    // METODO
+    public void Aggiungi_giocatore(Giocatore giocatore)
     {
-        Console.WriteLine("Scrivi il nickname del giocatore che vuoi rimuovere");  
-        string giocatore = Console.ReadLine();
-        if (giocatore.Contains(giocatore))
+        if (!Giocatori.Contains(giocatore))
         {
-            giocatori.Remove(giocatore);
-            Console.WriteLine($"Il giocatore {giocatore} è stato rimosso");
-            Console.WriteLine($"Ora il Party è composto dai giocatori {giocatori}");
+            Giocatori.Add(giocatore);
+            Console.WriteLine($"{giocatore.Nome} si è unito alla partita.");
         }
         else
         {
-            Console.WriteLine($"il giocatore {giocatore} non è presente nel Party");
+            Console.WriteLine($"{giocatore.Nome} è già presente nella partita.");
         }
+    }
+
+    // METODO
+    public void Rimuovi_giocatore(Giocatore giocatore)
+    {
+        Giocatori.Remove(giocatore);
+        Console.WriteLine($"{giocatore.Nome} ha lasciato la partita.");
     }
 }
