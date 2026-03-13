@@ -35,11 +35,12 @@ public class Giocatore
         }
         
         Portafogli -= partita.CostoCartella;
-        Cartelle.Add(cartella = new Cartella(id));
+        Cartella nuovaCartella = new Cartella(id);
+        Cartelle.Add(nuovaCartella);
         partita.IdCartellePrese.Add(id);
             
         Console.WriteLine($"{Nome} ha acquistato la cartella {id}. Saldo residuo: {Portafogli:C}");
-        cartella.Visualizza()
+        nuovaCartella.Visualizza();
         return true;
     }
     

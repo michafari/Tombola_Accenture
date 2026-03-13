@@ -1,132 +1,148 @@
-﻿namespace DefaultNamespace
+﻿namespace Tombola_Accenture
 {
     public class Cartella
     {
         public int Id { get; private set; }
-        public TipoPremio PremioMassimo { get; private set; }
-        private List<List<Casella>> _righe;
+        
+        // Usiamo nullable (?) per gestire il caso in cui non c'è ancora nessun premio
+        public Premio.TipoPremio? PremioMassimo { get; private set; } 
+        
+        // Usiamo una matrice 3x9 per garantire la forma esatta e fissa
+        private Casella[,] _griglia;
 
         // COSTRUTTORE
         public Cartella(int id)
         {
             Id = id;
-            PremioMassimo = TipoPremio.Nessuno;
-            _righe = new List<List<Casella>>();
-
-            List<int> numeriGenerati;
+            PremioMassimo = null; 
+            _griglia = new Casella[3, 9];
 
             if (id < 0 && id >= -6)
             {
                 // È una sezione del tabellone
-                numeriGenerati = GeneraNumeriTabellone(id);
+                GeneraTabellone(id);
             }
             else if (id > 0)
             {
                 // È una cartella normale (usiamo l'ID come Seed)
-                numeriGenerati = GeneraNumeriRealistici(id);
+                GeneraNumeriRealistici(id);
             }
             else
             {
                 throw new ArgumentException("L'ID non può essere 0 o minore di -6.");
             }
-
-            CostruisciRighe(numeriGenerati);
-        }
-
-        private void CostruisciRighe(List<int> numeri)
-        {
-            int indiceNumero = 0;
-            for (int i = 0; i < 3; i++)
-            {
-                List<Casella> nuovaRiga = new List<Casella>();
-                for (int j = 0; j < 5; j++)
-                {
-                    nuovaRiga.Add(new Casella(numeri[indiceNumero]));
-                    indiceNumero++;
-                }
-                _righe.Add(nuovaRiga);
-            }
         }
 
         // METODO PER LE SEZIONI DEL TABELLONE (ID da -1 a -6)
-        private List<int> GeneraNumeriTabellone(int id)
+        private void GeneraTabellone(int id)
         {
-            List<int> numeri = new List<int>();
-            
-            // Troviamo il numero di partenza in base all'ID
             int start = 0;
             switch (id)
             {
-                case -1: start = 1; break;  // 1..5, 11..15, 21..25
-                case -2: start = 6; break;  // 6..10, 16..20, 26..30
-                case -3: start = 31; break; // 31..35, 41..45, 51..55
-                case -4: start = 36; break; // ecc...
+                case -1: start = 1; break;  
+                case -2: start = 6; break;  
+                case -3: start = 31; break; 
+                case -4: start = 36; break; 
                 case -5: start = 61; break;
                 case -6: start = 66; break;
             }
 
-            // Creiamo le 3 righe matematicamente
+            // Posizioniamo i numeri compatti nelle prime 5 colonne
             for (int riga = 0; riga < 3; riga++)
             {
-                for (int i = 0; i < 5; i++)
+                for (int col = 0; col < 5; col++)
                 {
-                    // Aggiungiamo 10 per ogni riga successiva
-                    numeri.Add(start + (riga * 10) + i); 
+                    _griglia[riga, col] = new Casella(start + (riga * 10) + col);
                 }
             }
-            return numeri;
         }
 
         // METODO PER LE CARTELLE GIOCATORI (Con Seed)
-        private List<int> GeneraNumeriRealistici(int seed)
+        private void GeneraNumeriRealistici(int seed)
         {
-            // ECCO LA MAGIA: Passiamo il seed al Random!
-            Random random = new Random(seed); 
-            
-            int[] conteggioPerColonna = new int[9];
-            for (int i = 0; i < 9; i++) conteggioPerColonna[i] = 1;
+            Random random = new Random(seed);
+            bool[,] layout = new bool[3, 9];
+            bool valido = false;
 
-            int numeriDaAggiungere = 6;
-            while (numeriDaAggiungere > 0)
+            // 1. Generiamo il layout visivo: 
+            // ESATTAMENTE 5 caselle piene per riga.
+            // Almeno 1 numero per colonna (che di fatto forza un MAX di 3 per colonna essendo le righe solo 3).
+            while (!valido)
             {
-                int colonnaCasuale = random.Next(0, 9);
-                if (conteggioPerColonna[colonnaCasuale] < 3)
+                layout = new bool[3, 9];
+                int[] conteggioColonna = new int[9];
+
+                for (int r = 0; r < 3; r++)
                 {
-                    conteggioPerColonna[colonnaCasuale]++;
-                    numeriDaAggiungere--;
+                    int aggiunti = 0;
+                    while (aggiunti < 5)
+                    {
+                        int c = random.Next(0, 9);
+                        if (!layout[r, c]) // Se la cella è vuota, la occupiamo
+                        {
+                            layout[r, c] = true;
+                            conteggioColonna[c]++;
+                            aggiunti++;
+                        }
+                    }
+                }
+
+                valido = true;
+                // Assicuriamoci che non ci siano colonne vuote (Regola d'oro della tombola realistica)
+                for (int c = 0; c < 9; c++)
+                {
+                    if (conteggioColonna[c] == 0)
+                    {
+                        valido = false;
+                        break;
+                    }
                 }
             }
 
-            List<int> numeriFinali = new List<int>();
-            for (int i = 0; i < 9; i++)
+            // 2. Popoliamo il layout con i numeri corretti per ciascuna decina
+            for (int c = 0; c < 9; c++)
             {
-                int min = (i == 0) ? 1 : i * 10;
-                int max = (i == 8) ? 91 : (i + 1) * 10;
-                HashSet<int> estrattiInQuestaColonna = new HashSet<int>();
+                int numeriInColonna = 0;
+                for (int r = 0; r < 3; r++) if (layout[r, c]) numeriInColonna++;
 
-                while (estrattiInQuestaColonna.Count < conteggioPerColonna[i])
+                if (numeriInColonna > 0)
                 {
-                    estrattiInQuestaColonna.Add(random.Next(min, max));
-                }
-                numeriFinali.AddRange(estrattiInQuestaColonna);
-            }
+                    int min = (c == 0) ? 1 : c * 10;
+                    int max = (c == 8) ? 91 : (c + 1) * 10;
+                    
+                    List<int> estratti = new List<int>();
+                    while (estratti.Count < numeriInColonna)
+                    {
+                        int n = random.Next(min, max);
+                        if (!estratti.Contains(n)) estratti.Add(n);
+                    }
+                    estratti.Sort(); // I numeri scendono sempre in ordine crescente nella colonna
 
-            numeriFinali.Sort();
-            return numeriFinali;
+                    int indiceEstratto = 0;
+                    for (int r = 0; r < 3; r++)
+                    {
+                        if (layout[r, c])
+                        {
+                            _griglia[r, c] = new Casella(estratti[indiceEstratto]);
+                            indiceEstratto++;
+                        }
+                    }
+                }
+            }
         }
 
-        // CERCA NUMERO
+        // CERCA NUMERO E COPRI
         public void SegnaNumero(int numeroEstratto)
         {
             bool trovato = false;
             
-            foreach (var riga in _righe)
+            for (int r = 0; r < 3; r++)
             {
-                foreach (var casella in riga)
+                for (int c = 0; c < 9; c++)
                 {
-                    if (casella.Numero == numeroEstratto && !casella.Coperto)
+                    if (_griglia[r, c] != null && _griglia[r, c].Numero == numeroEstratto && !_griglia[r, c].Coperto)
                     {
-                        casella.copri();
+                        _griglia[r, c].copri();
                         trovato = true;
                     }
                 }
@@ -143,77 +159,64 @@
         {
             int totaleCopertiCartella = 0;
 
-            foreach (var riga in _righe)
+            for (int r = 0; r < 3; r++)
             {
                 int copertiInQuestaRiga = 0;
-                foreach (var casella in riga)
+                for (int c = 0; c < 9; c++)
                 {
-                    if (casella.Coperto) copertiInQuestaRiga++;
+                    if (_griglia[r, c] != null && _griglia[r, c].Coperto)
+                    {
+                        copertiInQuestaRiga++;
+                    }
                 }
 
                 totaleCopertiCartella += copertiInQuestaRiga;
                 
-                if (copertiInQuestaRiga == 5 && PremioMassimo < TipoPremio.Cinquina)
-                    PremioMassimo = TipoPremio.Cinquina;
-                else if (copertiInQuestaRiga == 4 && PremioMassimo < TipoPremio.Quaterna)
-                    PremioMassimo = TipoPremio.Quaterna;
-                else if (copertiInQuestaRiga == 3 && PremioMassimo < TipoPremio.Terno)
-                    PremioMassimo = TipoPremio.Terno;
-                else if (copertiInQuestaRiga == 2 && PremioMassimo < TipoPremio.Ambo)
-                    PremioMassimo = TipoPremio.Ambo;
+                if (copertiInQuestaRiga == 5 && (!PremioMassimo.HasValue || PremioMassimo.Value < Premio.TipoPremio.Cinquina))
+                    PremioMassimo = Premio.TipoPremio.Cinquina;
+                else if (copertiInQuestaRiga == 4 && (!PremioMassimo.HasValue || PremioMassimo.Value < Premio.TipoPremio.Quaterna))
+                    PremioMassimo = Premio.TipoPremio.Quaterna;
+                else if (copertiInQuestaRiga == 3 && (!PremioMassimo.HasValue || PremioMassimo.Value < Premio.TipoPremio.Terno))
+                    PremioMassimo = Premio.TipoPremio.Terno;
+                else if (copertiInQuestaRiga == 2 && (!PremioMassimo.HasValue || PremioMassimo.Value < Premio.TipoPremio.Ambo))
+                    PremioMassimo = Premio.TipoPremio.Ambo;
             }
             
             if (totaleCopertiCartella == 15)
             {
-                PremioMassimo = TipoPremio.Tombola;
+                PremioMassimo = Premio.TipoPremio.Tombola;
             }
         }
 
-        // VISUAIZZAZIONE
+        // VISUALIZZAZIONE
         public void Visualizza()
         {
+            string premioStr = PremioMassimo.HasValue ? PremioMassimo.Value.ToString() : "Nessuno";
             string titolo = Id < 0 ? $"SEZIONE TABELLONE ({Id})" : $"CARTELLA N° {Id}";
-            Console.WriteLine($"\n--- {titolo} --- (Premio: {PremioMassimo})");
+            Console.WriteLine($"\n--- {titolo} --- (Premio: {premioStr})");
 
-            // Se l'ID è negativo, stampa compatta!
+            // Stampa compatta per le sezioni del tabellone
             if (Id < 0) 
             {
-                foreach (var riga in _righe)
+                for (int riga = 0; riga < 3; riga++)
                 {
-                    foreach (var casella in riga)
+                    for (int col = 0; col < 5; col++)
                     {
+                        Casella casella = _griglia[riga, col];
                         if (casella.Coperto) Console.Write("[XX] ");
                         else Console.Write($"{casella.Numero,3}  ");
                     }
                     Console.WriteLine();
                 }
             }
-            else // Altrimenti stampa realistica 3x9
+            else // Stampa realistica 3x9 per le cartelle
             {
-                Casella[,] grigliaVisiva = new Casella[3, 9];
-                List<Casella> tutteLeCaselle = new List<Casella>();
-                
-                foreach (var riga in _righe) tutteLeCaselle.AddRange(riga);
-
-                foreach (var casella in tutteLeCaselle)
-                {
-                    int colonnaDecina = (casella.Numero == 90) ? 8 : casella.Numero / 10;
-                    for (int riga = 0; riga < 3; riga++)
-                    {
-                        if (grigliaVisiva[riga, colonnaDecina] == null)
-                        {
-                            grigliaVisiva[riga, colonnaDecina] = casella;
-                            break; 
-                        }
-                    }
-                }
-
                 for (int riga = 0; riga < 3; riga++)
                 {
                     for (int col = 0; col < 9; col++)
                     {
-                        Casella c = grigliaVisiva[riga, col];
-                        if (c == null) Console.Write(" --  "); 
+                        Casella c = _griglia[riga, col];
+                        if (c == null) Console.Write(" --  "); // Stampa spazi vuoti
                         else if (c.Coperto) Console.Write("[XX] ");
                         else Console.Write($"{c.Numero,3}  ");
                     }
