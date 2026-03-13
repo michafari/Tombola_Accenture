@@ -87,30 +87,40 @@ namespace Tombola_Accenture
 
             while (!partitaFinita)
             {
-                Console.WriteLine("\nPremi INVIO per estrarre un numero (o scrivi 'esci' per terminare)...");
+                Console.WriteLine("\nPremi INVIO per estrarre un numero (o 'esci' per terminare)...");
                 string input = Console.ReadLine();
                 if (input?.ToLower() == "esci") break;
 
                 int estratto = partita.Estrai_numero();
                 if (estratto == -1) break; 
 
-                Console.WriteLine($"\n========================================");
-                Console.WriteLine($"   NUMERO ESTRATTO: {estratto} !!!");
-                Console.WriteLine($"========================================");
+                Console.WriteLine($"\n==================================================");
+                Console.WriteLine($"              NUMERO ESTRATTO: {estratto} !!!              ");
+                Console.WriteLine($"==================================================");
 
                 tabellone.SegnaNumero(estratto);
-                tabellone.Visualizza();
+                tabellone.Visualizza(estratto);
 
                 List<Giocatore> vincitoriTurno = new List<Giocatore>();
+                bool almenoUnaCartellaColpita = false;
 
-                Console.WriteLine("--- AGGIORNAMENTO CARTELLE ---");
                 foreach (var giocatore in party.Giocatori)
                 {
                     bool haVintoPremioCorrente = false;
                     foreach (var cartella in giocatore.Cartelle)
                     {
-                        cartella.SegnaNumero(estratto);
-                        cartella.Visualizza();
+                        bool cartellaColpita = cartella.SegnaNumero(estratto);
+                        
+                        // Mostriamo la cartella SOLO se il numero appena estratto l'ha colpita
+                        if (cartellaColpita)
+                        {
+                            if (!almenoUnaCartellaColpita)
+                            {
+                                Console.WriteLine("--- CARTELLE COLPITE IN QUESTO TURNO ---");
+                                almenoUnaCartellaColpita = true;
+                            }
+                            cartella.Visualizza(giocatore.Nome, estratto);
+                        }
 
                         if (cartella.PremioMassimo.HasValue && cartella.PremioMassimo.Value >= premioInPalio.Tipo)
                         {

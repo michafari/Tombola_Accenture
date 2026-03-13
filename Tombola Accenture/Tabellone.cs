@@ -27,22 +27,15 @@ public class Tabellone
     // METODO: ESTRAI NUMERO
     public void SegnaNumero(int numero)
     {
-        if (numero < 1 || numero > 90)
-        {
-            Console.WriteLine("Numero non valido!");
-            return;
-        }
-
-        // calcoliamo coordinata
         int riga = (numero - 1) / 10;
         int col = (numero - 1) % 10;
         
         _griglia[riga, col].copri();
     }
     
-    public void Visualizza()
+    public void Visualizza(int ultimoEstratto = -1)
     {
-        Console.WriteLine("\n=== TABELLONE TOMBOLA ===");
+        Console.WriteLine("\n=============== TABELLONE  TOMBOLA ===============");
         for (int riga = 0; riga < 9; riga++)
         {
             for (int col = 0; col < 10; col++)
@@ -51,17 +44,21 @@ public class Tabellone
                 
                 if (casellaAttuale.Coperto)
                 {
-                    Console.Write("[XX] "); 
+                    // Colora di Giallo se appena estratto, di Rosso se estratto in passato
+                    if (casellaAttuale.Numero == ultimoEstratto) Console.ForegroundColor = ConsoleColor.Yellow;
+                    else Console.ForegroundColor = ConsoleColor.Red;
+                    
+                    Console.Write($"{casellaAttuale.Numero,3}  "); 
+                    Console.ResetColor(); // Ripristina il colore di default
                 }
                 else
                 {
                     // Se non è coperta, stampiamo il numero. 
-                    // Il ',3' serve ad allineare i numeri a una cifra con quelli a due cifre
                     Console.Write($"{casellaAttuale.Numero,3}  "); 
                 }
             }
             Console.WriteLine(); // Va a capo alla fine di ogni riga (ogni 10 numeri)
         }
-        Console.WriteLine("=========================\n");
+        Console.WriteLine("==================================================\n");
     }
 }

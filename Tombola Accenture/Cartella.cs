@@ -132,7 +132,7 @@
         }
 
         // CERCA NUMERO E COPRI
-        public void SegnaNumero(int numeroEstratto)
+        public bool SegnaNumero(int numeroEstratto)
         {
             bool trovato = false;
             
@@ -152,6 +152,8 @@
             {
                 AggiornaPremio();
             }
+
+            return trovato;
         }
 
         // CALCOLO PREMIO
@@ -189,11 +191,11 @@
         }
 
         // VISUALIZZAZIONE
-        public void Visualizza()
+        public void Visualizza(string nomeProprietario = "", int ultimoEstratto = -1)
         {
-            string premioStr = PremioMassimo.HasValue ? PremioMassimo.Value.ToString() : "Nessuno";
-            string titolo = Id < 0 ? $"SEZIONE TABELLONE ({Id})" : $"CARTELLA N° {Id}";
-            Console.WriteLine($"\n--- {titolo} --- (Premio: {premioStr})");
+            string prop = string.IsNullOrEmpty(nomeProprietario) ? "" : $" di {nomeProprietario}";
+            string titolo = Id < 0 ? $"SEZIONE TABELLONE ({Id})" : $"CARTELLA N° {Id}{prop}";
+            Console.WriteLine($"\n--- {titolo} ---");
 
             // Stampa compatta per le sezioni del tabellone
             if (Id < 0) 
@@ -203,7 +205,13 @@
                     for (int col = 0; col < 5; col++)
                     {
                         Casella casella = _griglia[riga, col];
-                        if (casella.Coperto) Console.Write("[XX] ");
+                        if (casella.Coperto)
+                        {
+                            if (casella.Numero == ultimoEstratto) Console.ForegroundColor = ConsoleColor.Yellow;
+                            else Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write($"{casella.Numero,3}  ");
+                            Console.ResetColor();
+                        }
                         else Console.Write($"{casella.Numero,3}  ");
                     }
                     Console.WriteLine();
@@ -217,7 +225,13 @@
                     {
                         Casella c = _griglia[riga, col];
                         if (c == null) Console.Write(" --  "); // Stampa spazi vuoti
-                        else if (c.Coperto) Console.Write("[XX] ");
+                        else if (c.Coperto)
+                        {
+                            if (c.Numero == ultimoEstratto) Console.ForegroundColor = ConsoleColor.Yellow;
+                            else Console.ForegroundColor = ConsoleColor.Red;
+                            Console.Write($"{c.Numero,3}  ");
+                            Console.ResetColor();
+                        }
                         else Console.Write($"{c.Numero,3}  ");
                     }
                     Console.WriteLine(); 
